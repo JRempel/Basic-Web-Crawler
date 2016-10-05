@@ -1,4 +1,4 @@
-package hk.edu.hbku.crawler;
+package crawler;
 
 public class PageResultException extends Exception {
     public PageResultException(String message) {

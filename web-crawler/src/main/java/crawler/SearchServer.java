@@ -1,4 +1,4 @@
-package hk.edu.hbku.crawler;
+package crawler;
 
 public class SearchServer {
     public static void main(String[] args) {

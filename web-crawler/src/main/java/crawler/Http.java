@@ -1,4 +1,4 @@
-package hk.edu.hbku.crawler;
+package crawler;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;

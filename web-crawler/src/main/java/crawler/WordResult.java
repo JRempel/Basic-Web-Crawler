@@ -1,4 +1,4 @@
-package hk.edu.hbku.crawler;
+package crawler;
 
 /**
  * Created by Asmodean on 2016-10-05.

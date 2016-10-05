@@ -1,4 +1,4 @@
-package hk.edu.hbku.crawler;
+package crawler;
 
 import java.util.ArrayList;
 
