@@ -21,7 +21,7 @@ public class Crawler {
     public void start() {
         while (!urlPool.isEmpty() && processedUrlPool.size() < maxURLsToCrawl) {
             if (processedUrlPool.size() % 10 == 0)
-                System.out.println(processedUrlPool.size());
+                System.out.println("[Crawler] Crawled " + processedUrlPool.size() + " pages.");
 
             // Get next URL and update pools
             String currentUrl = urlPool.get(0);

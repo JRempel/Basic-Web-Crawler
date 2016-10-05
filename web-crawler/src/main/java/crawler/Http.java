@@ -40,11 +40,11 @@ public class Http {
 
                     // retrieve words on current page, along with their first index
                     // and number of occurrences if they are not ignored
-                    ArrayList<String> words = new ArrayList<>(Arrays.asList(page.text().split("\\s+")));
+                    ArrayList<String> words = new ArrayList<>(Arrays.asList(page.text().toLowerCase().replaceAll("[^a-z]+", " ").split("\\s+")));
                     HashMap<String, WordResult> wordList = new HashMap<>();
-                    for (int i = 0; i < wordList.size(); i++) {
+                    for (int i = 0; i < words.size(); i++) {
                         String currentWord = words.get(i);
-                        if (!ignoredWords.contains(currentWord)) {
+                        if (!ignoredWords.contains(currentWord) && currentWord.length() >= 3) {
                             if (wordList.get(currentWord) == null) {
                                 wordList.put(currentWord, new WordResult(currentWord, i, 1));
                             } else {
