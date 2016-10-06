@@ -1,5 +1,5 @@
-class_dir = '../se/out/production/se'
-search_engine = 'se.SearchServer'
+class_dir = '../web-crawler/target'
+search_engine = 'web-crawler-jar-with-dependencies.jar'
 
 # enable cgi traceback manager
 import cgitb
@@ -18,4 +18,4 @@ import os
 os.chdir(class_dir)
 
 # invoke java search engine
-os.system('java ' + search_engine + ' ' + query)
+os.system('java -jar ' + search_engine + ' ' + query)
