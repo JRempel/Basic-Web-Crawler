@@ -1,8 +1,5 @@
 package crawler;
 
-/**
- * Created by Asmodean on 2016-10-05.
- */
 public class WordResult {
     private String word;
     private int position;

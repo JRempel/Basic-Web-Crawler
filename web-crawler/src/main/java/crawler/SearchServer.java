@@ -1,6 +1,5 @@
 package crawler;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -16,15 +15,15 @@ public class SearchServer {
 
     public static void main(String[] args) {
         loadProperties();
-
-        System.out.print("Content-type: text/html\n\n");
-        System.out.print("<title>CGI Test from Java</title>\n");
-        System.out.println("<p>Inital URL: " + initalURL + "</p>");
-        System.out.println("<p>Max URLS: " + maxURLS + "</p>");
-        System.out.println("<p>Max Pool Size: " + maxPoolSize + "</p>");
-
-        Crawler crawler = new Crawler(initalURL, maxURLS, maxPoolSize);
+        Storage storage = new Storage();
+        Crawler crawler = new Crawler(initalURL, maxURLS, maxPoolSize, storage);
         crawler.start();
+
+        storage.showTables();
+
+        storage.close();
+        // TODO: Need to figure out why some thread isn't exiting properly
+        System.exit(0);
     }
 
     private static void loadProperties() {
