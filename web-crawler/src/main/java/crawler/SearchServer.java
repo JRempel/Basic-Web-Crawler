@@ -1,13 +1,51 @@
 package crawler;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class SearchServer {
+    private static String initalURL;
+    private static int maxURLS;
+    private static int maxPoolSize;
+
+    private static String INITAL_URL = "initialURL";
+    private static String MAX_URLS = "maxURLs";
+    private static String MAX_POOL_SIZE = "maxPoolSize";
+
     public static void main(String[] args) {
+        loadProperties();
+
         System.out.print("Content-type: text/html\n\n");
         System.out.print("<title>CGI Test from Java</title>\n");
-//        System.out.print("<p>Hello World!</p>\n");
-//        System.out.print("Received query: " + Arrays.toString(args) + " \n\n\n\n");
 
-        Crawler crawler = new Crawler("http://www.hkbu.edu.hk/eng/main/index.jsp", 10, 10);
+        Crawler crawler = new Crawler(initalURL, maxURLS, maxPoolSize);
         crawler.start();
+    }
+
+    private static void loadProperties() {
+        Properties config = new Properties();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream("config.properties");
+            config.load(inputStream);
+            initalURL = config.getProperty(INITAL_URL);
+            maxURLS = Integer.parseInt(config.getProperty(MAX_URLS));
+            maxPoolSize = Integer.parseInt(config.getProperty(MAX_POOL_SIZE));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (initalURL == null || maxURLS == 0 || maxPoolSize == 0) {
+            throw new RuntimeException("Could not load web-crawler properties or config was missing a property.");
+        }
     }
 }
