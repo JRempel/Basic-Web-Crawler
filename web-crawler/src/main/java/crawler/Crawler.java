@@ -6,14 +6,16 @@ import java.util.Collections;
 import java.util.HashSet;
 
 public class Crawler {
+    private Storage storage;
     private ArrayList<String> urlPool = new ArrayList<>();
     private HashSet<String> processedUrlPool = new HashSet<>();
     private HashSet<String> ignoredWords = new HashSet<String>(Arrays.asList("and", "the", "for", "did", "does", "are", "was", "has", "had", "have", "that", "this", "these", "which", "whose", "who", "whom", "what", "why", "she", "he", "they", "them"));
     private int maxURLsToCrawl;
     private int maxURLPoolSize;
 
-    public Crawler(String url, int maxURLsToCrawl, int maxURLPoolSize) {
+    public Crawler(String url, int maxURLsToCrawl, int maxURLPoolSize, Storage storage) {
         urlPool.add(url);
+        this.storage = storage;
         this.maxURLsToCrawl = maxURLsToCrawl;
         this.maxURLPoolSize = maxURLPoolSize;
     }
@@ -40,9 +42,12 @@ public class Crawler {
                     }
                 }
 
-                // Store processed words
+                // Store processed words & metadata
                 if (pageResult.getWords() != null) {
-
+                    for (WordResult wordResult: pageResult.getWords()) {
+                        // convert to PreparedResult later
+                        storage.insert(currentUrl, wordResult);
+                    }
                 }
             } catch (PageResultException pe) {
                 System.out.println(pe.getMessage());
