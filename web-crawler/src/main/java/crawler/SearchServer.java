@@ -19,6 +19,9 @@ public class SearchServer {
 
         System.out.print("Content-type: text/html\n\n");
         System.out.print("<title>CGI Test from Java</title>\n");
+        System.out.println("<p>Inital URL: " + initalURL + "</p>");
+        System.out.println("<p>Max URLS: " + maxURLS + "</p>");
+        System.out.println("<p>Max Pool Size: " + maxPoolSize + "</p>");
 
         Crawler crawler = new Crawler(initalURL, maxURLS, maxPoolSize);
         crawler.start();
@@ -28,7 +31,7 @@ public class SearchServer {
         Properties config = new Properties();
         InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream("config.properties");
+            inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties");
             config.load(inputStream);
             initalURL = config.getProperty(INITAL_URL);
             maxURLS = Integer.parseInt(config.getProperty(MAX_URLS));
