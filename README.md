@@ -10,9 +10,11 @@
 ### Implemented Features
 - Reads settings from .properties file
 - Retrieves links & important words from URLS in the pool
+- Stores results in an H2 embedded DB
 
 ### Planned Features / Items
+- Return results
 - Obey robots.txt
 - Ranking of results
-- Store search results offline
 - Store timestamps & recrawl periodically
+- Multithreaded crawling & storage?
