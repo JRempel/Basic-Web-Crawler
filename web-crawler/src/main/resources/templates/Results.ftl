@@ -3,9 +3,9 @@
 <html>
     <head>
         <title>COMP4047 Search Engine</title>
-        <link rel="stylesheet" href="cgi-bin/style.css" />
-        <link rel="stylesheet" href="cgi-bin/skeleton.css" />
-        <link rel="stylesheet" href="cgi-bin/normalize.css" />
+        <link rel="stylesheet" href="../style.css" />
+        <link rel="stylesheet" href="../skeleton.css" />
+        <link rel="stylesheet" href="../normalize.css" />
     </head>
 
     <body>
