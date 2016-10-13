@@ -14,12 +14,17 @@ public class SearchServer {
     private static String MAX_POOL_SIZE = "maxPoolSize";
 
     public static void main(String[] args) {
+        System.out.println("Content-type: text/html\n\n");
+        System.out.println("<title>Crawler</title>\n");
+
         loadProperties();
         Storage storage = new Storage();
         Crawler crawler = new Crawler(initalURL, maxURLS, maxPoolSize, storage);
         crawler.start();
 
-        storage.showTables();
+        for (String s: storage.find(args)) {
+            System.out.println("<p>" + s + "</p>");
+        }
 
         storage.close();
         // TODO: Need to figure out why some thread isn't exiting properly

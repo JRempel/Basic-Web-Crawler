@@ -22,9 +22,6 @@ public class Crawler {
 
     public void start() {
         while (!urlPool.isEmpty() && processedUrlPool.size() < maxURLsToCrawl) {
-            if (processedUrlPool.size() % 10 == 0)
-                System.out.println("[Crawler] Crawled " + processedUrlPool.size() + " pages.");
-
             // Get next URL and update pools
             String currentUrl = urlPool.get(0);
             processedUrlPool.add(urlPool.get(0));
@@ -53,12 +50,6 @@ public class Crawler {
                 System.out.println(pe.getMessage());
                 pe.printStackTrace();
             }
-        }
-
-        ArrayList<String> list = new ArrayList<>(processedUrlPool);
-        Collections.sort(list);
-        for (String s: list) {
-            System.out.println(s);
         }
     }
 }
