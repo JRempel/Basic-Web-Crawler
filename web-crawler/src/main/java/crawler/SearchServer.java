@@ -5,26 +5,24 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class SearchServer {
-    private static String initalURL;
+    private static String initialURL;
     private static int maxURLS;
     private static int maxPoolSize;
+    private static String templateName;
 
     private static String INITAL_URL = "initialURL";
     private static String MAX_URLS = "maxURLs";
     private static String MAX_POOL_SIZE = "maxPoolSize";
+    private static String TEMPLATE_NAME = "templateName";
 
     public static void main(String[] args) {
-        System.out.println("Content-type: text/html\n\n");
-        System.out.println("<title>Crawler</title>\n");
-
         loadProperties();
         Storage storage = new Storage();
-        Crawler crawler = new Crawler(initalURL, maxURLS, maxPoolSize, storage);
+        Crawler crawler = new Crawler(initialURL, maxURLS, maxPoolSize, storage);
         crawler.start();
 
-        for (String s: storage.find(args)) {
-            System.out.println("<p>" + s + "</p>");
-        }
+        System.out.print("Content-Type: text/html\n\n");
+        System.out.println(new TemplateResponse().createHTML(storage.find(args)));
 
         storage.close();
         // TODO: Need to figure out why some thread isn't exiting properly
@@ -37,9 +35,10 @@ public class SearchServer {
         try {
             inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties");
             config.load(inputStream);
-            initalURL = config.getProperty(INITAL_URL);
+            initialURL = config.getProperty(INITAL_URL);
             maxURLS = Integer.parseInt(config.getProperty(MAX_URLS));
             maxPoolSize = Integer.parseInt(config.getProperty(MAX_POOL_SIZE));
+            templateName = config.getProperty(TEMPLATE_NAME);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -51,7 +50,7 @@ public class SearchServer {
                 }
             }
         }
-        if (initalURL == null || maxURLS == 0 || maxPoolSize == 0) {
+        if (initialURL == null || maxURLS == 0 || maxPoolSize == 0) {
             throw new RuntimeException("Could not load web-crawler properties or config was missing a property.");
         }
     }

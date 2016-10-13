@@ -1,0 +1,71 @@
+/* background setup */
+.background {
+    background-repeat:no-repeat;
+    /* custom background-position */
+    background-position:50% 50%;
+    /* ie8- graceful degradation */
+    background-position:50% 50%\9 !important;
+}
+
+/* fullscreen setup */
+html, body {
+    /* give this to all tags from html to .fullscreen */
+    height:100%;
+}
+.fullscreen,
+.content-a {
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+.fullscreen.overflow,
+.fullscreen.overflow .content-a {
+    height:auto;
+    min-height:100%;
+}
+
+/* content centering styles */
+.content-a {
+	display:table;
+}
+.content-b {
+	display:table-cell;
+    position:relative;
+	vertical-align:middle;
+	text-align:center;
+}
+
+/* visual styles */
+body{
+    margin:0;
+    font-family:sans-serif;
+    font-size:28px;
+    line-height:100px;
+	  color:#ffffff;
+}
+
+.center {
+  width: 70%;
+  margin: 0 auto;
+  vertical-align: center;
+  position: relative;
+  top: 30%;
+  margin-left: 15%;
+  margin-right: 15%;
+  line-height: 1.75em;
+  border-radius: 2px;
+  box-shadow: 0 .2em .2em 0 rgba(0, 0, 0, 0.24), 0 -.01em .1em 0 rgba(0, 0, 0, 0.24);
+  background-color: #EEEEEE
+}
+
+.center-no-card {
+  width: 70%;
+  margin: 0 auto;
+  padding-bottom: 1em;
+  vertical-align: center;
+}
+
+.overlay {
+  background-color: rgba(238, 238, 238, 0.1);
+  height: 100%;
+}

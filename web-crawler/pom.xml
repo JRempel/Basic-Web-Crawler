@@ -71,6 +71,11 @@
             <artifactId>h2</artifactId>
             <version>1.4.192</version>
         </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.25-incubating</version>
+        </dependency>
 
     </dependencies>
 </project>
