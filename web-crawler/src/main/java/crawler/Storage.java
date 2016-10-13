@@ -2,6 +2,7 @@ package crawler;
 
 import org.h2.tools.Server;
 
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Storage {
     private static final String DB_DRIVER = "org.h2.Driver";
@@ -95,19 +97,39 @@ public class Storage {
         }
     }
 
-    public ArrayList<String> find (String searchTerm) {
-        ArrayList<String> results = new ArrayList<>();
+    public ArrayList<String> find (String[] searchTerms) {
+        ArrayList<String> results;
+        HashSet<String> intersect = new HashSet<>();
+        ArrayList<HashSet<String>> mergeList = new ArrayList<>();
 
-        try {
-            PreparedStatement statement = connection.prepareStatement(SELECT_SEARCHTERM);
-            statement.setString(1, searchTerm);
-            ResultSet resultSet = statement.executeQuery();
+        for (String searchTerm: searchTerms) {
+            HashSet<String> tempResults = new HashSet<>();
+            try {
+                PreparedStatement statement = connection.prepareStatement(SELECT_SEARCHTERM);
+                statement.setString(1, searchTerm);
+                ResultSet resultSet = statement.executeQuery();
 
-            while (resultSet.next()) {
-                results.add(resultSet.getString("SITE"));
+                while (resultSet.next()) {
+                    tempResults.add(resultSet.getString("SITE"));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            mergeList.add(tempResults);
+        }
+
+        if (!mergeList.isEmpty()) {
+            intersect = mergeList.get(0);
+            mergeList.remove(0);
+            for (HashSet hs: mergeList) {
+                intersect.retainAll(hs);
+            }
+        }
+
+        if (intersect.isEmpty()) {
+            results = new ArrayList<>();
+        } else {
+            results = new ArrayList<>(intersect);
         }
 
         return results;
