@@ -19,7 +19,9 @@ public class SearchServer {
         Crawler crawler = new Crawler(initalURL, maxURLS, maxPoolSize, storage);
         crawler.start();
 
-        storage.showTables();
+        for (String s: storage.find("staff")) {
+            System.out.println(s);
+        }
 
         storage.close();
         // TODO: Need to figure out why some thread isn't exiting properly

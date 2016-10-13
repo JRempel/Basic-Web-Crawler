@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class Storage {
     private static final String DB_DRIVER = "org.h2.Driver";
@@ -25,6 +26,8 @@ public class Storage {
     private static final String INSERT_WORD = "INSERT INTO WORDS (WORD) VALUES(?)";
     private static final String GET_WORD_INDEX = "SELECT ID FROM WORDS WHERE WORD=?";
     private static final String INSERT_META = "INSERT INTO META (URL_INDEX, WORD_INDEX, FIRST_OCCURRENCE, NUM_OCCURRENCES) VALUES(?,?,?,?)";
+
+    private static final String SELECT_SEARCHTERM = "SELECT U.SITE FROM URLS AS U JOIN META AS M ON U.ID=M.URL_INDEX JOIN WORDS AS W ON W.ID=M.WORD_INDEX WHERE W.WORD=?";
 
     private Connection connection;
 
@@ -92,23 +95,28 @@ public class Storage {
         }
     }
 
+    public ArrayList<String> find (String searchTerm) {
+        ArrayList<String> results = new ArrayList<>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(SELECT_SEARCHTERM);
+            statement.setString(1, searchTerm);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                results.add(resultSet.getString("SITE"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return results;
+    }
+
     public void close() {
         try {
             connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void showTables() {
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM WORDS");
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString("WORD"));
-            }
-
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
