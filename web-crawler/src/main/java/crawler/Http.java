@@ -55,7 +55,7 @@ public class Http {
                         }
                     }
 
-                    return new PageResult(linkedUrls, new ArrayList<>(wordList.values()));
+                    return new PageResult(linkedUrls, new ArrayList<>(wordList.values()), System.currentTimeMillis());
                 }
             } else {
                 // some sort of Http error response
