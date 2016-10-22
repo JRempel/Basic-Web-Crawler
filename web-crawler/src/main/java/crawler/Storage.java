@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -16,10 +18,13 @@ public class Storage {
     private static final String DB_USER = "";
     private static final String DB_PASSWORD = "";
 
-    private static final String CREATE_URL_TABLE = "CREATE TABLE IF NOT EXISTS URLS(ID BIGINT AUTO_INCREMENT PRIMARY KEY, SITE VARCHAR(512), TIMESTAMP LONG);";
-    private static final String CREATE_WORD_TABLE = "CREATE TABLE IF NOT EXISTS WORDS(ID BIGINT AUTO_INCREMENT PRIMARY KEY, WORD VARCHAR(255));";
-    private static final String CREATE_META_TABLE = "CREATE TABLE IF NOT EXISTS META(URL_INDEX BIGINT, WORD_INDEX BIGINT, FIRST_OCCURRENCE INT, " +
-            "NUM_OCCURRENCES INT, PRIMARY KEY (URL_INDEX, WORD_INDEX), FOREIGN KEY (URL_INDEX) REFERENCES PUBLIC.URLS(ID), FOREIGN KEY (WORD_INDEX) REFERENCES PUBLIC.WORDS(ID));";
+    private static final String CREATE_URL_TABLE = "CREATE TABLE IF NOT EXISTS URLS(ID BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+            "SITE VARCHAR(512), TIMESTAMP LONG);";
+    private static final String CREATE_WORD_TABLE = "CREATE TABLE IF NOT EXISTS WORDS(ID BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+            "WORD VARCHAR(255));";
+    private static final String CREATE_META_TABLE = "CREATE TABLE IF NOT EXISTS META(URL_INDEX BIGINT, WORD_INDEX BIGINT, " +
+            "FIRST_OCCURRENCE INT, NUM_OCCURRENCES INT, PRIMARY KEY (URL_INDEX, WORD_INDEX), FOREIGN KEY (URL_INDEX) " +
+            "REFERENCES PUBLIC.URLS(ID), FOREIGN KEY (WORD_INDEX) REFERENCES PUBLIC.WORDS(ID));";
 
     private static final String INSERT_URL = "INSERT INTO URLS (SITE, TIMESTAMP) VALUES(?,?)";
     private static final String SELECT_URL_COUNT = "SELECT COUNT (*) FROM URLS WHERE SITE=?";
@@ -34,7 +39,8 @@ public class Storage {
     private static final String SELECT_META_COUNT = "SELECT COUNT (*) FROM META WHERE URL_INDEX=? AND WORD_INDEX=?";
     private static final String UPDATE_META = "UPDATE META SET FIRST_OCCURRENCE=? AND NUM_OCCURRENCES=? WHERE URL_INDEX=? AND WORD_INDEX=?";
 
-    private static final String SELECT_SEARCHTERM = "SELECT U.SITE FROM URLS AS U JOIN META AS M ON U.ID=M.URL_INDEX JOIN WORDS AS W ON W.ID=M.WORD_INDEX WHERE W.WORD=?";
+    private static final String SELECT_SEARCHTERM = "SELECT U.SITE, M.NUM_OCCURRENCES, M.FIRST_OCCURRENCE FROM URLS AS U JOIN META AS M " +
+            "ON U.ID=M.URL_INDEX JOIN WORDS AS W ON W.ID=M.WORD_INDEX WHERE W.WORD=?";
     private static final String GET_LASTCRAWLED = "SELECT SITE, TIMESTAMP FROM URLS";
 
     private Connection connection;
@@ -134,19 +140,20 @@ public class Storage {
     }
 
     public ArrayList<String> find(String[] searchTerms) {
-        ArrayList<String> results;
-        HashSet<String> intersect = new HashSet<>();
-        ArrayList<HashSet<String>> mergeList = new ArrayList<>();
+        ArrayList<SearchResult> searchResults;
+        ArrayList<String> results = new ArrayList<>();
+        HashSet<SearchResult> intersect = new HashSet<>();
+        ArrayList<HashSet<SearchResult>> mergeList = new ArrayList<>();
 
         for (String searchTerm : searchTerms) {
-            HashSet<String> tempResults = new HashSet<>();
+            HashSet<SearchResult> tempResults = new HashSet<>();
             try {
                 PreparedStatement statement = connection.prepareStatement(SELECT_SEARCHTERM);
                 statement.setString(1, searchTerm.toLowerCase());
                 ResultSet resultSet = statement.executeQuery();
 
                 while (resultSet.next()) {
-                    tempResults.add(resultSet.getString("SITE"));
+                    tempResults.add(new SearchResult(resultSet.getString("SITE"), resultSet.getInt("NUM_OCCURRENCES"), resultSet.getInt("FIRST_OCCURRENCE")));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -162,10 +169,19 @@ public class Storage {
             }
         }
 
-        if (intersect.isEmpty()) {
-            results = new ArrayList<>();
-        } else {
-            results = new ArrayList<>(intersect);
+        if (!intersect.isEmpty()) {
+            searchResults = new ArrayList<>(intersect);
+            searchResults.sort((SearchResult s1, SearchResult s2) -> {
+                if (s1.getNumOccurrences() != s2.getNumOccurrences())
+                    return s2.getNumOccurrences() - s1.getNumOccurrences();
+                else if (s1.getFirstOccurrence() != s2.getFirstOccurrence())
+                    return s1.getFirstOccurrence() - s2.getFirstOccurrence();
+                else
+                    return s1.getUrl().compareTo(s2.getUrl());
+            } );
+            for (SearchResult s: searchResults) {
+                results.add(s.getUrl());
+            }
         }
 
         return results;
