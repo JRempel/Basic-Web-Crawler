@@ -6,10 +6,11 @@
         <link rel="stylesheet" href="../style.css" />
         <link rel="stylesheet" href="../skeleton.css" />
         <link rel="stylesheet" href="../normalize.css" />
+        <!-- Background(s) by Nikola Jokic: https://www.behance.net/gallery/25452205/Wallpapers-light -->
     </head>
 
     <body>
-        <div class="fullscreen background" style="background-image:url('https://pixabay.com/static/uploads/photo/2016/05/26/14/04/skyline-1417229_1280.jpg');background-size: cover;" >
+        <div class="fullscreen background" style="background-image:url('./images/IMG_2323.JPG');background-size: cover;" >
             <div class="overlay">
                 <div class="center">
                     <section id="title" class="u-full-width" style="text-align:center;">
