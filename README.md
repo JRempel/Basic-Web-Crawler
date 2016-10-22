@@ -11,11 +11,12 @@
 - Reads settings from .properties file
 - Retrieves links & important words from URLS in the pool
 - Stores results in an H2 embedded DB
-- Returns results as an intersect of all search-terms results.
+- Returns results as an intersect of all search-terms results
+- Stores timestamps for each URL, has 'daysBeforeRecrawl' parameter
 
 ### Planned Features / Items
 - Return partial results when no matches for all search-terms
 - Obey robots.txt
 - Ranking of results
-- Store timestamps & recrawl periodically
+- Recrawl periodically
 - Multithreaded crawling & storage?
