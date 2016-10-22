@@ -13,10 +13,10 @@
 - Stores results in an H2 embedded DB
 - Returns results as an intersect of all search-terms results
 - Stores timestamps for each URL, has 'daysBeforeRecrawl' parameter
+- Basic ranking of results; for each word: number of occurrences > first occurrence > alphabetical sort on URL
 
 ### Planned Features / Items
 - Return partial results when no matches for all search-terms
 - Obey robots.txt
-- Ranking of results
 - Recrawl periodically
 - Multithreaded crawling & storage?
