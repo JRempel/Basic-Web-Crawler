@@ -40,6 +40,8 @@ public class Storage {
     private static final String SELECT_SEARCHTERM = "SELECT U.SITE, M.NUM_OCCURRENCES, M.FIRST_OCCURRENCE FROM URLS AS U JOIN META AS M " +
             "ON U.ID=M.URL_INDEX JOIN WORDS AS W ON W.ID=M.WORD_INDEX WHERE W.WORD=?";
     private static final String GET_LASTCRAWLED = "SELECT SITE, TIMESTAMP FROM URLS";
+    private static final String GET_ALL = "SELECT M.FIRST_OCCURRENCE, M.NUM_OCCURRENCES, W.WORD FROM URLS AS U JOIN META AS M ON U.ID=M.URL_INDEX" +
+            " JOIN WORDS AS W ON W.ID=M.WORD_INDEX WHERE U.SITE=?";
 
     private Connection connection;
 
@@ -231,6 +233,29 @@ public class Storage {
             e.printStackTrace();
         }
         return results;
+    }
+
+    /**
+     * Print all relations in the DB.
+     */
+    public void dumpResults() {
+        HashMap<String, Long> urls = getLastCrawled();
+        System.out.println("URL LAST_CRAWLED(EPOCH) WORD FIRST_OCCURRENCE NUM_OCCURRENCES");
+        for (String url : urls.keySet()) {
+            PreparedStatement statement;
+            ResultSet resultSet;
+            try {
+                statement = connection.prepareStatement(GET_ALL);
+                statement.setString(1, url);
+                resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    System.out.println(url + " " + urls.get(url) + " "  + resultSet.getString("WORD") +  " " +
+                            resultSet.getInt("FIRST_OCCURRENCE") + " " + resultSet.getInt("NUM_OCCURRENCES"));
+                }
+            } catch (Exception e) {
+
+            }
+        }
     }
 
     /**
