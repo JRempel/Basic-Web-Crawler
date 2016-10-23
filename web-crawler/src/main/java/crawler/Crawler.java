@@ -70,7 +70,7 @@ public class Crawler {
                         }
                     }
                 } catch (PageResultException pe) {
-                    System.out.println(pe.getMessage());
+                    System.out.println(pe.getMessage() + " for " + currentUrl);
                     pe.printStackTrace();
                 }
             }
