@@ -7,8 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -45,6 +43,10 @@ public class Storage {
 
     private Connection connection;
 
+    /**
+     * Create a connection to an embedded H2 DB, or create one if
+     * one doesn't yet exist.
+     */
     public Storage() {
         try {
             Class.forName(DB_DRIVER);
@@ -55,6 +57,9 @@ public class Storage {
         createTables();
     }
 
+    /**
+     * Create the appropriate tables if they don't exist already.
+     */
     private void createTables() {
         try {
             Statement statement = connection.createStatement();
@@ -69,6 +74,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Insert / update the tables based upon crawling a page.
+     * @param url
+     * @param wordResult
+     * @param timestamp
+     */
     public void insert(String url, WordResult wordResult, long timestamp) {
         try {
             ResultSet resultSet;
@@ -76,6 +87,7 @@ public class Storage {
             int wordId;
             PreparedStatement statement;
 
+            // Update the URL entry if it exists, else create it
             statement = connection.prepareStatement(SELECT_URL_COUNT);
             statement.setString(1, url);
             resultSet = statement.executeQuery();
@@ -93,6 +105,7 @@ public class Storage {
                 }
             }
 
+            // Insert a Word entry if it doesn't exist
             statement = connection.prepareStatement(SELECT_WORD_COUNT);
             statement.setString(1, wordResult.getWord());
             resultSet = statement.executeQuery();
@@ -102,6 +115,8 @@ public class Storage {
                 statement.execute();
             }
 
+            // Get index columns from previously inserted data for
+            // linking in the Meta table.
             statement = connection.prepareStatement(GET_URL_INDEX);
             statement.setString(1, url);
             resultSet = statement.executeQuery();
@@ -114,7 +129,7 @@ public class Storage {
             resultSet.next();
             wordId = resultSet.getInt("ID");
 
-
+            // Update a meta-entry if it exists, else create it
             statement = connection.prepareStatement(SELECT_META_COUNT);
             statement.setInt(1, urlId);
             statement.setInt(2, wordId);
@@ -139,12 +154,19 @@ public class Storage {
         }
     }
 
+    /**
+     * Get the list of sorted URLs that contain
+     * all given search-terms.
+     * @param searchTerms
+     * @return
+     */
     public ArrayList<String> find(String[] searchTerms) {
         ArrayList<SearchResult> searchResults;
         ArrayList<String> results = new ArrayList<>();
         HashSet<SearchResult> intersect = new HashSet<>();
         ArrayList<HashSet<SearchResult>> mergeList = new ArrayList<>();
 
+        // Get the results for each individual search-term.
         for (String searchTerm : searchTerms) {
             HashSet<SearchResult> tempResults = new HashSet<>();
             try {
@@ -161,6 +183,7 @@ public class Storage {
             mergeList.add(tempResults);
         }
 
+        // Find the intersect between all search-result lists.
         if (!mergeList.isEmpty()) {
             intersect = mergeList.get(0);
             mergeList.remove(0);
@@ -169,6 +192,7 @@ public class Storage {
             }
         }
 
+        // Sort any elements that are in the intersect list.
         if (!intersect.isEmpty()) {
             searchResults = new ArrayList<>(intersect);
             searchResults.sort((SearchResult s1, SearchResult s2) -> {
@@ -183,10 +207,14 @@ public class Storage {
                 results.add(s.getUrl());
             }
         }
-
         return results;
     }
 
+    /**
+     * Get a list of all previously crawled URLs and the timestamp
+     * of when they were last crawled.
+     * @return
+     */
     public HashMap<String, Long> getLastCrawled() {
         HashMap<String, Long> results = new HashMap<>();
         PreparedStatement statement;
@@ -205,6 +233,9 @@ public class Storage {
         return results;
     }
 
+    /**
+     * Close the connection to the H2 DB so that the tables aren't locked.
+     */
     public void close() {
         try {
             connection.close();

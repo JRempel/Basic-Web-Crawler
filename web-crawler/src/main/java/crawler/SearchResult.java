@@ -1,5 +1,8 @@
 package crawler;
 
+/**
+ * A POJO to store search results retrieved from the Storage object.
+ */
 public class SearchResult {
     private String url;
     private int firstOccurrence;

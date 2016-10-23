@@ -28,17 +28,17 @@ public class SearchServer {
         Crawler crawler = new Crawler(initialURL, maxURLS, maxPoolSize, storage, ignoreList, daysBeforeRecrawl);
         crawler.start();
 
-        args = new String[1];
-        args[0] = "HKBU";
-
         System.out.print("Content-Type: text/html\n\n");
-        System.out.println(new TemplateResponse().createHTML(storage.find(args)));
+        System.out.println(new TemplateResponse().createHTML(storage.find(args), templateName));
 
         storage.close();
         // TODO: Need to figure out why some thread isn't exiting properly
         System.exit(0);
     }
 
+    /**
+     * Read config.properties file in.
+     */
     private static void loadProperties() {
         Properties config = new Properties();
         InputStream inputStream = null;

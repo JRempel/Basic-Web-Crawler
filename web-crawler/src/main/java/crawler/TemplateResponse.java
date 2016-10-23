@@ -13,13 +13,20 @@ import java.util.Map;
 
 public class TemplateResponse {
 
-    public String createHTML(ArrayList<String> results) {
+    /**
+     * Given a list of URLs, merge the list with the
+     * Apache Freemarker template and return as a String.
+     * @param results
+     * @param templateName
+     * @return
+     */
+    public String createHTML(ArrayList<String> results, String templateName) {
         String page = "";
 
         Configuration configuration = new Configuration();
         configuration.setClassForTemplateLoading(this.getClass(), "/templates");
         try {
-            Template template = configuration.getTemplate("Results.ftl");
+            Template template = configuration.getTemplate(templateName);
             Map<String, Object> data = new HashMap<>();
 
             data.put("results", results);

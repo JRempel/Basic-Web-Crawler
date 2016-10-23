@@ -19,9 +19,12 @@ public class Http {
     private static int timeout = 5000;
 
     /**
-     * Retrieve html file of given url.
-     *
+     * Get the words, their indexes and number of occurrences from a given URL,
+     * if they are not contained in the ignored-words list.
      * @param url
+     * @param ignoredWords
+     * @return
+     * @throws PageResultException
      */
     public static PageResult get(String url, HashSet<String> ignoredWords) throws PageResultException {
         try {
@@ -58,10 +61,8 @@ public class Http {
                     return new PageResult(linkedUrls, new ArrayList<>(wordList.values()), System.currentTimeMillis());
                 }
             } else {
-                // some sort of Http error response
                 throw new PageResultException("Failed to retrieve page: " + url + " due to HTTP Response " + response.statusCode() + response.statusMessage());
             }
-
         } catch (IOException e) {
             throw new PageResultException(e.getMessage(), e.getCause());
         }
