@@ -1,5 +1,9 @@
 package crawler;
 
+/**
+ * A POJO for for storing the meta-data associated with
+ * a specific word during crawling.
+ */
 public class WordResult {
     private String word;
     private int position;

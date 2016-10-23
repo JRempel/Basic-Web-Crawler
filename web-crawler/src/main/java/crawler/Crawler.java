@@ -18,6 +18,14 @@ public class Crawler {
     private long millisecondsPerDay = 86400000L;
 
 
+    /**
+     * @param url
+     * @param maxURLsToCrawl
+     * @param maxURLPoolSize
+     * @param storage
+     * @param ignoreList
+     * @param daysBeforeReCrawl
+     */
     public Crawler(String url, int maxURLsToCrawl, int maxURLPoolSize, Storage storage, HashSet<String> ignoreList, int daysBeforeReCrawl) {
         urlPool.add(url);
         this.storage = storage;
@@ -27,6 +35,9 @@ public class Crawler {
         this.daysBeforeReCrawl = daysBeforeReCrawl;
     }
 
+    /**
+     * Crawl the URL(s) based on parameters.
+     */
     public void start() {
         // get timestamp list
         previouslyCrawled = storage.getLastCrawled();
@@ -38,10 +49,9 @@ public class Crawler {
             processedUrlPool.add(urlPool.get(0));
             urlPool.remove(0);
 
+            // Crawl only if the URL is older than the time specified, or hasn't been crawled before.
             if (previouslyCrawled.get(currentUrl) == null || Math.abs(currentTime - previouslyCrawled.get(currentUrl))> daysBeforeReCrawl * millisecondsPerDay) {
                 try {
-                    // check timestamp
-
                     PageResult pageResult = Http.get(currentUrl, ignoredWords);
 
                     // Add new URLs to the pool to be processed
@@ -56,8 +66,6 @@ public class Crawler {
                     // Store processed words & metadata
                     if (pageResult.getWords() != null) {
                         for (WordResult wordResult: pageResult.getWords()) {
-                            // convert to PreparedResult later
-                            // TODO: Don't re-insert URLS for each word-result
                             storage.insert(currentUrl, wordResult, pageResult.getLastCrawled());
                         }
                     }
