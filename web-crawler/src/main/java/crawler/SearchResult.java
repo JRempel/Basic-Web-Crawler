@@ -25,4 +25,17 @@ public class SearchResult {
     public int getNumOccurrences() {
         return numOccurrences;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof SearchResult && ((SearchResult) object).getUrl().equals(this.getUrl())) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return url.hashCode();
+    }
 }
