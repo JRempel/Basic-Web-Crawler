@@ -1,11 +1,10 @@
 package crawler;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Properties;
+import java.util.HashSet;
+import org.apache.commons.io.IOUtils;
 import java.util.StringTokenizer;
 
 public class SearchServer {
@@ -22,14 +21,26 @@ public class SearchServer {
     private static String TEMPLATE_NAME = "templateName";
     private static String DAYS_BEFORE_RECRAWL = "daysBeforeRecrawl";
 
+    private static final String CRAWLER_KEY = "THISISNOTASEARCHTERM_INDEXINSTEAD";
+    private static boolean isCrawler;
+
     public static void main(String[] args) {
+//        args = new String[1];
+//        args[0] = "THISISNOTASEARCHTERM_INDEXINSTEAD";
+//        args = new String[1];
+//        args[0] = "hkbu";
+        isCrawler = args[0].equals(CRAWLER_KEY);
+
         loadProperties();
         Storage storage = new Storage();
-        Crawler crawler = new Crawler(initialURL, maxURLS, maxPoolSize, storage, ignoreList, daysBeforeRecrawl);
-        crawler.start();
 
-        System.out.print("Content-Type: text/html\n\n");
-        System.out.println(new TemplateResponse().createHTML(storage.find(args), templateName));
+        if (isCrawler){
+            Crawler crawler = new Crawler(initialURL, maxURLS, maxPoolSize, storage, ignoreList, daysBeforeRecrawl);
+            crawler.start();
+        } else {
+            System.out.print("Content-Type: text/html\n\n");
+            System.out.println(new TemplateResponse().createHTML(storage.find(args), templateName));
+        }
 
         storage.close();
         // TODO: Need to figure out why some thread isn't exiting properly
@@ -42,21 +53,27 @@ public class SearchServer {
     private static void loadProperties() {
         Properties config = new Properties();
         InputStream inputStream = null;
+        inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties");
         try {
-            inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties");
             config.load(inputStream);
-            initialURL = config.getProperty(INITAL_URL);
-            maxURLS = Integer.parseInt(config.getProperty(MAX_URLS));
-            maxPoolSize = Integer.parseInt(config.getProperty(MAX_POOL_SIZE));
-            templateName = config.getProperty(TEMPLATE_NAME);
-            daysBeforeRecrawl = Integer.parseInt(config.getProperty(DAYS_BEFORE_RECRAWL));
+            if (isCrawler){
+                initialURL = config.getProperty(INITAL_URL);
+                maxURLS = Integer.parseInt(config.getProperty(MAX_URLS));
+                maxPoolSize = Integer.parseInt(config.getProperty(MAX_POOL_SIZE));
+                templateName = config.getProperty(TEMPLATE_NAME);
+                daysBeforeRecrawl = Integer.parseInt(config.getProperty(DAYS_BEFORE_RECRAWL));
 
-            inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("IgnoreList.csv");
-            ignoreList = new HashSet<>();
-            StringTokenizer stringTokenizer = new StringTokenizer(IOUtils.toString(inputStream),",");
-            while (stringTokenizer.hasMoreTokens()) {
-                ignoreList.add(stringTokenizer.nextToken());
+                inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("IgnoreList.csv");
+                ignoreList = new HashSet<>();
+                StringTokenizer stringTokenizer = new StringTokenizer(IOUtils.toString(inputStream),",");
+                while (stringTokenizer.hasMoreTokens()) {
+                    ignoreList.add(stringTokenizer.nextToken());
+                }
+            } else {
+                templateName = config.getProperty(TEMPLATE_NAME);
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -68,7 +85,7 @@ public class SearchServer {
                 }
             }
         }
-        if (initialURL == null || maxURLS == 0 || maxPoolSize == 0) {
+        if (isCrawler & (initialURL == null || maxURLS == 0 || maxPoolSize == 0)) {
             throw new RuntimeException("Could not load web-crawler properties or config was missing a property.");
         }
     }
