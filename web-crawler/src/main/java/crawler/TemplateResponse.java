@@ -25,6 +25,7 @@ public class TemplateResponse {
 
         Configuration configuration = new Configuration();
         configuration.setClassForTemplateLoading(this.getClass(), "/templates");
+
         try {
             Template template = configuration.getTemplate(templateName);
             Map<String, Object> data = new HashMap<>();
