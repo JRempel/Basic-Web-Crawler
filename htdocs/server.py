@@ -6,14 +6,14 @@ html_dir = '../../htdocs'
 import os
 os.chdir(class_dir)
 
-# invoke java crawler engine
+# invoke crawler engine
 status = 'Please wait until we crawl some webpages for you. This may take some minutes...'
 print(status)
-os.system('java -jar ' + crawler_engine + ' THISISNOTASEARCHTERM_INDEXINSTEAD')
+os.system('java -jar ' + crawler_engine + ' CRAWL_AND_INDEX')
 
-# pyhton will wait until the above programm is terminated before continue executing the script
-
+# revert to original directory once crawling is finished
 os.chdir(html_dir)
+
 # launch browser to use the search engine
 import webbrowser
 from http.server import HTTPServer, CGIHTTPRequestHandler
