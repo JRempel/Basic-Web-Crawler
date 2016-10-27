@@ -10,7 +10,7 @@
     </head>
 
     <body>
-        <div class="fullscreen background" style="background-image:url('./images/IMG_2323.JPG');background-size: cover;" >
+        <div class="fullscreen background" style="background-image:url('../images/IMG_2323.JPG');background-size: cover;" >
             <div class="overlay">
                 <div class="center">
                     <section id="title" class="u-full-width" style="text-align:center;">
@@ -26,11 +26,15 @@
                     </section>
                     <section id="results">
                         <div class="center-no-card">
-                        <ol>
-                                <#list results as result>
-                                    <li><a href="${result}">${result}</a></li>
-                                </#list>
-                            </ol>
+                                <#if results?has_content>
+                                    <ol>
+                                        <#list results as result>
+                                            <li><a href="${result}">${result}</a></li>
+                                        </#list>
+                                    </ol>
+                                <#else>
+                                    <p>Sorry, no search results.</p>
+                                </#if>
                         </div>
                     </section>
                 </div>
