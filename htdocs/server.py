@@ -26,5 +26,4 @@ def run(server_class=HTTPServer, handler_class=CGIHTTPRequestHandler):
 if __name__ == '__main__':
     url = 'http://localhost:8000'
     print('Server runs at', url)
-    webbrowser.open(url)
     run()

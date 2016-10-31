@@ -1,14 +1,18 @@
-# launch browser to use the search engine
 import webbrowser
-#from http.server import HTTPServer, CGIHTTPRequestHandler
+import socket
 
-#def run(server_class=HTTPServer, handler_class=CGIHTTPRequestHandler):
-#    server_address = ('', 8000)
-#    httpd = server_class(server_address, handler_class)
-#    httpd.serve_forever()
+def internet(host="localhost", port=8000, timeout=3):
+	try:
+		socket.setdefaulttimeout(timeout)
+		socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+		return True
+	except Exception as ex:
+		return False
 
 if __name__ == '__main__':
-    url = 'http://localhost:8000'
-    print('Server runs at', url)
-    webbrowser.open(url)
-    run()
+	if internet():
+		url = 'http://localhost:8000'
+		webbrowser.open(url)
+	else:
+		print ("Server not running, please run start-server.cmd first.")
+		wait = input("Press ENTER to Exit.")
