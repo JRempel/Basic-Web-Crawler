@@ -1,4 +1,4 @@
-# Basic Web Crawler
+# Web Crawler & Basic Search Engine
 
 ### Building
 - *(Optional)* update config.properties in web-crawler/src/main/resources.
